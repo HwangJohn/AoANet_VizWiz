@@ -1,2 +1,9 @@
 *.DS_Store
 *.pyc
+*.h5
+*.json
+*.npz
+*.npy
+*.zip
+*.tsv.*
+*.local
