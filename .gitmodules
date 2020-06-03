@@ -4,3 +4,6 @@
 [submodule "coco-caption"]
 	path = coco-caption
 	url = https://github.com/ruotianluo/coco-caption.git
+[submodule "SceneGraphParser"]
+	path = SceneGraphParser
+	url = https://github.com/HwangJohn/SceneGraphParser.git

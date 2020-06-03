@@ -7,3 +7,5 @@
 *.zip
 *.tsv.*
 *.local
+.ipynb_checkpoints/
+pretrained/
