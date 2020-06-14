@@ -45,6 +45,11 @@ from PIL import Image
 sys.path.append('COCOAPI/')
 from pycocotools.coco import COCO
 
+# sys.path.append("../")
+
+# import SceneGraphParser.sng_parser as sng_parser
+# import sng_parser 
+
 VizWiz_ANN_PATH = 'data/'
 COCO_TRAIN_VOCAB_PATH = 'data/cocotalk_vocab.json'
 

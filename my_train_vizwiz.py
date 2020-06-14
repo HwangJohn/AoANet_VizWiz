@@ -28,22 +28,6 @@ except ImportError:
     print("tensorboardX is not installed")
     tb = None
 
-def load_para(model, ckpt_file, load_to_cpu=True):
-    map_location = (lambda storage, loc: storage) if load_to_cpu else None
-    ckpt = torch.load(ckpt_file, map_location=map_location) # The model and optimizer is loaded from the saved file
-    para_dict = ckpt # Get the state dict
-
-    for n,p in model.state_dict().items(): 
-        ip = para_dict[n] # Get the parameters with selected layer name from save file
-        if p.shape == ip.shape: 
-            p.data.copy_(ip.data) # Copy the data of parameters
-        else:
-            print('{} -shape {} ,{}'.format(n, (p.shape), (ip.shape))) 
-            p.data[:10369].copy_(ip.data[:10369])
-            p.data[-1].copy_(ip.data[-1])
-    return model
-    
-
 def add_summary_value(writer, key, value, iteration):
     if writer:
         writer.add_scalar(key, value, iteration)
@@ -97,27 +81,18 @@ def train(opt):
         best_val_score = infos.get('best_val_score', None)
 
     opt.vocab = loader.get_vocab()
+    # model = models.setup(opt).cuda()
     model = models.setup(opt)
-    model = load_para(model, os.path.join('./log/log_aoanet_rl', 'model.pth'))
-    if True:
-        del opt.vocab
-        dp_model = model
-        lw_model = LossWrapper(model, opt)
-        dp_lw_model = torch.nn.DataParallel(lw_model)
+    del opt.vocab
+    # dp_model = torch.nn.DataParallel(model)
+    dp_model = model
+    lw_model = LossWrapper(model, opt)
+    # dp_lw_model = torch.nn.DataParallel(lw_model)
+    dp_lw_model = lw_model
 
-        epoch_done = True
-        # Assure in training mode
-        dp_lw_model.train()        
-    else:
-        model = model.cuda()
-        del opt.vocab
-        dp_model = torch.nn.DataParallel(model)
-        lw_model = LossWrapper(model, opt)
-        dp_lw_model = torch.nn.DataParallel(lw_model)
-
-        epoch_done = True
-        # Assure in training mode
-        dp_lw_model.train()
+    epoch_done = True
+    # Assure in training mode
+    dp_lw_model.train()
 
     if opt.noamopt:
         assert opt.caption_model in ['transformer','aoa'], 'noamopt can only work with transformer'
@@ -188,10 +163,10 @@ def train(opt):
             if (iteration % acc_steps == 0):
                 optimizer.zero_grad()
             
-            torch.cuda.synchronize()
+            # torch.cuda.synchronize()
             start = time.time()
             tmp = [data['fc_feats'], data['att_feats'], data['labels'], data['masks'], data['att_masks']]
-            tmp = [_ if _ is None else _.cuda() for _ in tmp]
+            # tmp = [_ if _ is None else _.cuda() for _ in tmp]
             fc_feats, att_feats, labels, masks, att_masks = tmp
 
             model_out = dp_lw_model(fc_feats, att_feats, labels, masks, att_masks, data['gts'], torch.arange(0, len(data['gts'])), sc_flag)
@@ -203,7 +178,7 @@ def train(opt):
             if ((iteration+1) % acc_steps == 0):
                 utils.clip_gradient(optimizer, opt.grad_clip)
                 optimizer.step()
-            torch.cuda.synchronize()
+            # torch.cuda.synchronize()
             train_loss = loss.item()
             end = time.time()
             if not sc_flag:
@@ -300,6 +275,5 @@ def train(opt):
         print(stack_trace)
 
 
-opt = opts.parse_opt()
-# opt = opts.my_parse_opt()
+opt = opts.my_parse_opt()
 train(opt)

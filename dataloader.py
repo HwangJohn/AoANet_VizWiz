@@ -15,6 +15,9 @@ import torch.utils.data as data
 import multiprocessing
 import six
 
+# for test
+import opts
+
 class HybridLoader:
     """
     If db_path is a director, then use normal file loading
@@ -357,3 +360,8 @@ class BlobFetcher():
         assert tmp[-1] == ix, "ix not equal"
 
         return tmp + [wrapped]
+
+if __name__ == "__main__":
+    opt = opts.my_parse_opt()
+    loader = DataLoader(opt)
+    data = loader.get_batch('train')

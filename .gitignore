@@ -9,3 +9,6 @@
 *.local
 .ipynb_checkpoints/
 pretrained/
+data/
+log/
+sng_parser/
