@@ -157,7 +157,7 @@ def train(opt):
                 opt.current_lr = opt.learning_rate * (iteration+1) / opt.noamopt_warmup
                 utils.set_lr(optimizer, opt.current_lr)
             # Load data from train split (0)
-            data = loader.get_batch('train')
+            data = loader.get_batch_sng_version('train')
             print('Read data:', time.time() - start)
 
             if (iteration % acc_steps == 0):
