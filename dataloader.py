@@ -241,9 +241,15 @@ class DataLoader(data.Dataset):
                 for r in concat_rels:
                     tmp_word_to_ix_list.append(self.word_to_ix[r])
 
-                tmp_word_to_ix_arr = np.array(tmp_word_to_ix_list)
-                sng_parsed_label[1:len(tmp_word_to_ix_list)+1] = tmp_word_to_ix_arr
+                # sng parser의 결과가 18단어 보다 커질 경우 
+                if len(tmp_word_to_ix_list) < 18:
+                    tmp_word_to_ix_arr = np.array(tmp_word_to_ix_list)
+                else:
+                    tmp_word_to_ix_arr = np.array(tmp_word_to_ix_list[:16])
+
+                sng_parsed_label[1:tmp_word_to_ix_arr.shape[0]+1] = tmp_word_to_ix_arr
                 sng_parsed_label_list.append(sng_parsed_label)
+
             else:
                 # sng_parser결과가 ''이면 원 label을 붙임
                 sng_parsed_label_list.append(label)
