@@ -242,7 +242,7 @@ class DataLoader(data.Dataset):
                     tmp_word_to_ix_list.append(self.word_to_ix[r])
 
                 tmp_word_to_ix_arr = np.array(tmp_word_to_ix_list)
-                sng_parsed_label[1:len(tmp_word_to_ix_arr)+1] = tmp_word_to_ix_arr
+                sng_parsed_label[1:len(tmp_word_to_ix_list)+1] = tmp_word_to_ix_arr
                 sng_parsed_label_list.append(sng_parsed_label)
             else:
                 # sng_parser결과가 ''이면 원 label을 붙임
@@ -527,6 +527,7 @@ if __name__ == "__main__":
     # transform from labels to sng_parsed_labels
     opt = opts.my_parse_opt()
     loader = DataLoader(opt)
-    data = loader.get_batch_sng_version('train')
-    assert data['labels'].shape == data['masks'].shape, 'The shapes are different'
+    for idx in range(1000):
+        data = loader.get_batch_sng_version('train')
+        assert data['labels'].shape == data['masks'].shape, 'The shapes are different'
 
