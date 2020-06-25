@@ -223,7 +223,7 @@ class DataLoader(data.Dataset):
         sng_parsed_label_list = []
         for label in labels:
             sng_t = []
-            sng_parsed_label = np.zeros(label.shape, dtype=np.uint32)
+            sng_parsed_label = np.zeros(label.shape, dtype=np.int64)
             for g in label:
                 if g != 0:
                     sng_t.append(self.info['ix_to_word'][str(g)])
